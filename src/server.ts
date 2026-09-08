@@ -28,9 +28,12 @@ async function buildNode(path: string): Promise<FileTreeNode | null> {
 export async function getFileTree(path: string): Promise<FileTreeNode[]> {
     
     const file = await buildNode(path);
-    if (file === null) {
+    if (file === null)
         return [];
-    }
+
+    if('children' in file)
+        return file.children;
 
     return [file];
+    
 }
