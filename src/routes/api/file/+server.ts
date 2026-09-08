@@ -7,12 +7,6 @@ export async function GET({ url }: RequestEvent) {
         return new Response('Missing path parameter', { status: 400 });
     }
 
-    const type = getFileType(path);
-    if(type && type === 'pdf') {
-        const fileContents = await Bun.file(path).arrayBuffer();
-        return new Response(fileContents, { status: 200, headers: { 'Content-Type': 'application/pdf' } });
-    }
-
     const fileContents = await Bun.file(path).text();
     return new Response(fileContents, { status: 200, headers: { 'Content-Type': 'text/plain' } });
 }

@@ -1,47 +1,87 @@
 <script lang="ts">
-    import { createQuery } from '@tanstack/svelte-query';
-    import { getFileType } from '@/shared';
-    import TypstFileViewer from './TypstFileViewer.svelte';
-    let { path } = $props();
-    let fileType: string | undefined = $derived(getFileType(path));
+    import github from "svelte-highlight/styles/github";
+    import { createQuery, useQueryClient } from '@tanstack/svelte-query';
+	import TypstFileViewer from "./TypstFileViewer.svelte";
+    import PDFViewer from "./PDFViewer.svelte";
 
-    const fileContentsQuery = $derived.by(() => {
-        return createQuery(() => ({
-            queryKey: ['fileContents', path],
-            queryFn: async () => {
-                const response = await fetch(`/api/file?path=${encodeURIComponent(path)}`);
-                if (!response.ok) {
-                    throw new Error('Failed to fetch file contents');
-                }
-                const type = getFileType(path);
-                if (type && type === 'pdf') {
-                    const blob = await response.blob();
-                    return { type: 'pdf' as const, url: `${URL.createObjectURL(blob)}#toolbar=0&navpanes=0` };
-                }
-                return { type: 'text' as const, text: await response.text() };
-            }
-        }));
-    });
+    let { path }: { path: string } = $props();
 
-    $effect(() => {
-        const data = fileContentsQuery.data;
-        return () => {
-            if (data?.type === 'pdf') {
-                URL.revokeObjectURL(data.url.split('#')[0]);
+    const text = createQuery(() => ({
+        queryKey: ['fileContents', path],
+        queryFn: async () => {
+            const response = await fetch(`/api/file?path=${encodeURIComponent(path)}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch file contents');
             }
+            return response.text();
+        }
+    }));
+
+    const pdfPath = $derived(path.replace(/\.typ$/, '.pdf'));
+
+    const pdf = createQuery(() => ({
+        queryKey: ['fileContents', pdfPath],
+        queryFn: async () => {
+            const response = await fetch('/api/compile', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ path })
+            });
+            if (!response.ok) {
+                throw new Error('Failed to compile PDF');
+            }
+            const { data } = await response.json();
+            return data as string;
+        },
+        retry: false
+    }));
+
+    let splitPercent = $state(50);
+    let container: HTMLDivElement | undefined = $state();
+
+    function startResize(event: PointerEvent) {
+        event.preventDefault();
+        (event.target as Element).setPointerCapture(event.pointerId);
+        const onMove = (e: PointerEvent) => {
+            if (!container) return;
+            const rect = container.getBoundingClientRect();
+            const percent = ((e.clientX - rect.left) / rect.width) * 100;
+            splitPercent = Math.min(80, Math.max(20, percent));
         };
-    });
+        const onUp = () => {
+            window.removeEventListener('pointermove', onMove);
+            window.removeEventListener('pointerup', onUp);
+        };
+        window.addEventListener('pointermove', onMove);
+        window.addEventListener('pointerup', onUp);
+    }
 
 </script>
 
-{#if fileContentsQuery.isLoading}
-    <span class="flex h-screen items-center justify-center">Loading...</span>
-{:else if fileContentsQuery.isError}
-    <span class="flex h-screen items-center justify-center">There was a problem loading this file's contents.</span>
-{:else if fileContentsQuery.isSuccess}
-    {#if fileType === 'pdf'}
-        <embed src={fileContentsQuery.data.url} type="application/pdf" class="h-screen w-full" />
-    {:else if fileType === 'typ' && fileContentsQuery.data.type === 'text'}
-        <TypstFileViewer {path} text={fileContentsQuery.data.text} />
-    {/if}
+<svelte:head>
+    {@html github}
+</svelte:head>
+
+{#if text.isLoading}
+    <div class="flex h-screen w-full items-center justify-center">
+        <span class="text-gray-500">Loading...</span>
+    </div>
+{:else if text.isError}
+    <div class="flex h-screen w-full items-center justify-center">
+        <span class="text-red-600">Failed to load file contents.</span>
+    </div>
+{:else if text.isSuccess}
+    <div bind:this={container} class="flex h-screen w-full">
+        <div class="relative min-w-0 overflow-hidden border-r border-gray-300" style:width="{splitPercent}%">
+            <TypstFileViewer {path} text={text.data} />
+            <button
+                class="absolute inset-y-0 right-0 w-1 cursor-col-resize"
+                aria-label="Resize panels"
+                onpointerdown={startResize}
+            ></button>
+        </div>
+        <div class="min-w-0 flex-1 overflow-hidden">
+            <PDFViewer content={pdf.isSuccess ? pdf.data : undefined} {path} />
+        </div>
+    </div>
 {/if}

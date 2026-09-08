@@ -8,11 +8,15 @@ export async function POST({ request }: RequestEvent) {
         return new Response('Missing path parameter', { status: 400 });
     }
 
-    const compilation = await $`typst compile ${path}`;
+    const compilation = await $`typst compile ${path} -`;
     if(compilation.exitCode !== 0) {
         return new Response(`Compilation failed: ${compilation.stderr}`, { status: 500 });
     }
 
-    return new Response('Compilation successful', { status: 200 });    
+    const base64 = Buffer.from(compilation.stdout).toString('base64');
+    return new Response(JSON.stringify({ data: base64 }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' }
+    });
 
 }
