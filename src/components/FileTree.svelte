@@ -53,13 +53,6 @@
 		}
 	}
 
-	function anySelected(node: FileTreeNode): boolean {
-		if (isDir(node)) {
-			return node.children.some(anySelected);
-		} else {
-			return node.selected;
-		}
-	}
 </script>
 
 {#snippet treeNode(node: FileTreeNode, depth: number)}
