@@ -8,7 +8,7 @@ export async function POST({ request }: RequestEvent) {
         return new Response('Missing path parameter', { status: 400 });
     }
 
-    const compilation = await $`typst compile ${path} -`;
+    const compilation = await $`typst compile ${path} -`.quiet();
     if(compilation.exitCode !== 0) {
         return new Response(`Compilation failed: ${compilation.stderr}`, { status: 500 });
     }
