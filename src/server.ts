@@ -13,7 +13,7 @@ async function buildNode(path: string): Promise<FileTreeNode> {
         const entries = (await readdir(path)).filter((entry) => {
             const fileType = getFileType(join(path, entry));
             const isDirectory = statSync(join(path, entry)).isDirectory();
-            return fileType === 'typ' || fileType === 'pdf' || isDirectory;
+            return fileType === 'typ' || isDirectory;
         });
         const children = await Promise.all(
             entries.map((entry) => buildNode(join(path, entry)))
