@@ -4,12 +4,7 @@
     const { content, path }: { content: string | undefined; path: string } = $props();
     const queryClient = useQueryClient();
 
-    let compiling = $state(false);
-    let compileError = $state('');
-
     async function compile() {
-        compiling = true;
-        compileError = '';
         try {
             const response = await fetch('/api/compile', {
                 method: 'POST',
@@ -21,11 +16,7 @@
             }
             const { data } = await response.json();
             queryClient.setQueryData(['fileContents', path.replace(/\.typ$/, '.pdf')], data);
-        } catch (e) {
-            compileError = e instanceof Error ? e.message : 'Compilation failed';
-        } finally {
-            compiling = false;
-        }
+        } catch (e) {}
     }
 
     let decoded = $derived(content ? atob(content) : '');
@@ -49,18 +40,6 @@
 </script>
 
 <div class="flex h-full w-full flex-col">
-    <div class="flex items-center gap-2 border-b p-2">
-        <button
-            class="rounded bg-green-600 px-3 py-1 text-sm text-white disabled:opacity-50"
-            onclick={compile}
-            disabled={compiling}
-        >
-            {compiling ? 'Compiling...' : 'Compile'}
-        </button>
-        {#if compileError}
-            <span class="text-sm text-red-600">{compileError}</span>
-        {/if}
-    </div>
     {#if pdfUrl}
         <object data="{pdfUrl}#toolbar=0&navpanes=0&statusbar=0" type="application/pdf" title="PDF preview">
             <p>
