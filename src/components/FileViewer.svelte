@@ -59,15 +59,15 @@
 </script>
 
 {#if text.isLoading}
-    <div class="flex h-screen w-full items-center justify-center">
+    <div class="flex h-full w-full items-center justify-center">
         <span class="text-gray-500">Loading...</span>
     </div>
 {:else if text.isError}
-    <div class="flex h-screen w-full items-center justify-center">
+    <div class="flex h-full w-full items-center justify-center">
         <span class="text-red-600">Failed to load file contents.</span>
     </div>
 {:else if text.isSuccess}
-    <div bind:this={container} class="flex h-screen w-full">
+    <div bind:this={container} class="flex h-full w-full min-w-0">
         <div class="relative min-w-0 overflow-hidden border-r border-gray-300" style:width="{splitPercent}%">
             <TypstFileViewer {path} bind:text={text.data} />
             <button

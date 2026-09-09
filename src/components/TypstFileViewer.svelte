@@ -42,7 +42,7 @@
     });
 </script>
 
-<div class="flex h-screen w-full min-w-0 flex-col">
+<div class="flex h-full w-full min-w-0 flex-col">
     <div class="flex items-center gap-2 border-b p-2">
         <button
             class="rounded bg-blue-600 px-3 py-1 text-sm text-white disabled:opacity-50"
@@ -61,7 +61,11 @@
         <CodeMirror
             bind:value={editedText}
             lang={typst_lezer()}
-            styles={{ '&': { height: '100%' } }}
+            class="h-full"
+            styles={{
+                '&': { height: '100%' },
+                '.cm-scroller': { overflow: 'auto' }
+            }}
         />
     </div>
 </div>

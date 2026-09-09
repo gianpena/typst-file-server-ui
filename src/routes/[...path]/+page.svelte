@@ -16,7 +16,7 @@
 </script>
 
 {#if !docUnavailable}
-	<div class="flex">
+	<div class="flex h-screen overflow-hidden">
 		<FileTree fileTree={data.files as FileTreeNode[]} bind:fileCurrentlySelected />
 		{#if fileCurrentlySelected}
 			<FileViewer path={fileCurrentlySelected} />
