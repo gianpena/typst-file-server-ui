@@ -10,3 +10,7 @@ export function getFileType(path: string): string | undefined {
     const match = pattern.exec(basename);
     return match ? match[1].toLowerCase() : undefined;
 }
+
+export function PDFify(path: string): string {
+    return path.replace(/\.typ$/, '.pdf');
+}

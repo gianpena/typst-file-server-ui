@@ -1,23 +1,6 @@
 <script lang=ts>
-    import { useQueryClient } from '@tanstack/svelte-query';
 
-    const { content, path }: { content: string | undefined; path: string } = $props();
-    const queryClient = useQueryClient();
-
-    async function compile() {
-        try {
-            const response = await fetch('/api/compile', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ path })
-            });
-            if (!response.ok) {
-                throw new Error(await response.text());
-            }
-            const { data } = await response.json();
-            queryClient.setQueryData(['fileContents', path.replace(/\.typ$/, '.pdf')], data);
-        } catch (e) {}
-    }
+    const { content }: { content: string | undefined } = $props();
 
     let decoded = $derived(content ? atob(content) : '');
 

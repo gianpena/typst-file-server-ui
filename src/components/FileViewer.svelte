@@ -1,7 +1,8 @@
 <script lang="ts">
-    import { createQuery, useQueryClient } from '@tanstack/svelte-query';
-	import TypstFileViewer from "./TypstFileViewer.svelte";
-    import PDFViewer from "./PDFViewer.svelte";
+    import { createQuery } from '@tanstack/svelte-query';
+	import TypstFileViewer from "@/components/TypstFileViewer.svelte";
+    import PDFViewer from "@/components/PDFViewer.svelte";
+    import { PDFify } from '@/shared';
 
     let { path }: { path: string } = $props();
 
@@ -16,7 +17,7 @@
         }
     }));
 
-    const pdfPath = $derived(path.replace(/\.typ$/, '.pdf'));
+    const pdfPath = $derived(PDFify(path));
 
     const pdf = createQuery(() => ({
         queryKey: ['fileContents', pdfPath],
@@ -76,7 +77,7 @@
             ></button>
         </div>
         <div class="min-w-0 flex-1 overflow-hidden">
-            <PDFViewer content={pdf.isSuccess ? pdf.data : undefined} {path} />
+            <PDFViewer content={pdf.isSuccess ? pdf.data : undefined} />
         </div>
     </div>
 {/if}

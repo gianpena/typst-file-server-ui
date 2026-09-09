@@ -2,6 +2,7 @@
     import CodeMirror from 'svelte-codemirror-editor';
     import { typst_lezer } from 'codemirror-lang-typst/lezer';
     import { useQueryClient } from '@tanstack/svelte-query';
+    import { PDFify } from '@/shared';
 
     const { path, text = $bindable('') }: { path: string; text: string } = $props();
     const queryClient = useQueryClient();
@@ -25,6 +26,7 @@
                 throw new Error('Failed to save file');
             }
             await queryClient.invalidateQueries({ queryKey: ['fileContents', path] });
+            await queryClient.invalidateQueries({ queryKey: ['fileContents', PDFify(path)] });
         } catch {
             saveError = true;
         } finally {
