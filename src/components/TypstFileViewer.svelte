@@ -31,6 +31,13 @@
             saving = false;
         }
     }
+
+    window.addEventListener('beforeunload', (event) => {
+        if(isDirty) {
+            event.preventDefault();
+            event.returnValue = '';
+        }
+    });
 </script>
 
 <div class="flex h-screen w-full min-w-0 flex-col">
