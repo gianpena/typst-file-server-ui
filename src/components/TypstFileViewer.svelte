@@ -1,29 +1,16 @@
 <script lang="ts">
-    import { Highlight } from 'svelte-highlight';
+    import CodeMirror from 'svelte-codemirror-editor';
+    import { typst_lezer } from 'codemirror-lang-typst/lezer';
     import { useQueryClient } from '@tanstack/svelte-query';
-    import typst from "svelte-highlight/languages/typst";
 
-    const { path, text }: { path: string; text: string } = $props();
+    const { path, text = $bindable('') }: { path: string; text: string } = $props();
     const queryClient = useQueryClient();
 
-    let editedText = $state('');
+    let editedText = $derived(text);
     let saving = $state(false);
     let saveError = $state(false);
-    let highlighted: HTMLDivElement | undefined = $state();
-    let editor: HTMLTextAreaElement | undefined = $state();
-
-    $effect(() => {
-        editedText = text || '';
-    });
 
     const isDirty = $derived(editedText !== text);
-
-    function syncScroll() {
-        if (highlighted && editor) {
-            highlighted.scrollTop = editor.scrollTop;
-            highlighted.scrollLeft = editor.scrollLeft;
-        }
-    }
 
     async function save() {
         saving = true;
@@ -44,37 +31,28 @@
             saving = false;
         }
     }
-
 </script>
 
 <div class="flex h-screen w-full min-w-0 flex-col">
-        <div class="flex items-center gap-2 border-b p-2">
-            <button
-                class="rounded bg-blue-600 px-3 py-1 text-sm text-white disabled:opacity-50"
-                onclick={save}
-                disabled={!isDirty || saving}
-            >
-                {saving ? 'Saving...' : 'Save'}
-            </button>
-            {#if saveError}
-                <span class="text-sm text-red-600">Failed to save file.</span>
-            {:else if isDirty}
-                <span class="text-sm text-gray-500">Unsaved changes</span>
-            {/if}
-        </div>
-        <div class="relative min-h-0 flex-1">
-            <div
-                bind:this={highlighted}
-                class="absolute inset-0 overflow-auto font-mono text-sm leading-normal [&_code]:!m-0 [&_code]:!block [&_code]:!overflow-visible [&_code]:!bg-transparent [&_code]:!p-0 [&_code]:font-mono [&_code]:text-sm [&_code]:leading-normal [&_code]:whitespace-pre [&_pre]:!m-0 [&_pre]:!overflow-visible [&_pre]:!p-4 [&_pre]:font-mono [&_pre]:text-sm [&_pre]:leading-normal [&_pre]:whitespace-pre"
-            >
-                <Highlight language={typst} code={editedText.endsWith('\n') ? editedText + ' ' : editedText} />
-            </div>
-            <textarea
-                bind:this={editor}
-                bind:value={editedText}
-                onscroll={syncScroll}
-                spellcheck="false"
-                class="absolute inset-0 h-full w-full resize-none overflow-auto bg-transparent p-4 font-mono text-sm leading-normal whitespace-pre text-transparent caret-black outline-none"
-            ></textarea>
-        </div>
+    <div class="flex items-center gap-2 border-b p-2">
+        <button
+            class="rounded bg-blue-600 px-3 py-1 text-sm text-white disabled:opacity-50"
+            onclick={save}
+            disabled={!isDirty || saving}
+        >
+            {saving ? 'Saving...' : 'Save'}
+        </button>
+        {#if saveError}
+            <span class="text-sm text-red-600">Failed to save file.</span>
+        {:else if isDirty}
+            <span class="text-sm text-gray-500">Unsaved changes</span>
+        {/if}
     </div>
+    <div class="min-h-0 flex-1 overflow-hidden">
+        <CodeMirror
+            bind:value={editedText}
+            lang={typst_lezer()}
+            styles={{ '&': { height: '100%' } }}
+        />
+    </div>
+</div>

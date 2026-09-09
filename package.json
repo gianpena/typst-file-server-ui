@@ -38,6 +38,8 @@
 	},
 	"dependencies": {
 		"@tanstack/svelte-query": "^6.1.48",
-		"svelte-highlight": "^7.20.0"
+		"codemirror": "^6.0.2",
+		"codemirror-lang-typst": "^0.6.0",
+		"svelte-codemirror-editor": "^2.1.0"
 	}
 }

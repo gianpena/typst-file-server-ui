@@ -1,5 +1,4 @@
 <script lang="ts">
-    import github from "svelte-highlight/styles/github";
     import { createQuery, useQueryClient } from '@tanstack/svelte-query';
 	import TypstFileViewer from "./TypstFileViewer.svelte";
     import PDFViewer from "./PDFViewer.svelte";
@@ -58,10 +57,6 @@
 
 </script>
 
-<svelte:head>
-    {@html github}
-</svelte:head>
-
 {#if text.isLoading}
     <div class="flex h-screen w-full items-center justify-center">
         <span class="text-gray-500">Loading...</span>
@@ -73,7 +68,7 @@
 {:else if text.isSuccess}
     <div bind:this={container} class="flex h-screen w-full">
         <div class="relative min-w-0 overflow-hidden border-r border-gray-300" style:width="{splitPercent}%">
-            <TypstFileViewer {path} text={text.data} />
+            <TypstFileViewer {path} bind:text={text.data} />
             <button
                 class="absolute inset-y-0 right-0 w-1 cursor-col-resize"
                 aria-label="Resize panels"
