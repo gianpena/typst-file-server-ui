@@ -21,7 +21,9 @@
 		{#if fileCurrentlySelected}
 			<FileViewer path={fileCurrentlySelected} />
 		{:else}
-			<p>No file selected</p>
+			<div class="flex flex-1 items-center justify-center">
+				<p class="text-gray-500">No file selected</p>
+			</div>
 		{/if}
 	</div>
 {/if}

@@ -32,7 +32,7 @@
         </object>
     {:else}
         <div class="flex flex-1 w-full items-center justify-center">
-            <span class="text-gray-400">No PDF yet — compile the file to see a preview.</span>
+            <span class="text-gray-400">No PDF available. Did it compile unsuccessfully?</span>
         </div>
     {/if}
 </div>
