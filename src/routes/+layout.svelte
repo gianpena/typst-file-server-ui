@@ -3,6 +3,7 @@
 	import favicon from '$lib/assets/favicon.svg';
 	
 	import { QueryClient, QueryClientProvider } from '@tanstack/svelte-query';
+	import Auth from '@/components/Auth.svelte';
 	const queryClient = new QueryClient();
 
 	let { children } = $props();
@@ -10,5 +11,7 @@
 
 <svelte:head><link rel="icon" href={favicon} /></svelte:head>
 <QueryClientProvider client={queryClient}>
-	{@render children()}
+	<Auth>
+		{@render children()}
+	</Auth>
 </QueryClientProvider>
