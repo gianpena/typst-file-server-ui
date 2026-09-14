@@ -87,7 +87,7 @@
 {/snippet}
 
 <div
-	class="relative h-full shrink-0 overflow-x-hidden overflow-y-auto border border-gray-300 bg-gray-50 p-2 text-sm"
+	class="flex flex-col gap-1 relative h-full shrink-0 overflow-x-hidden overflow-y-auto border border-gray-300 bg-gray-50 p-2 text-sm"
 	style:width="{sidebarWidth}px"
 >
 	{#each fileTree as node (node.name)}
