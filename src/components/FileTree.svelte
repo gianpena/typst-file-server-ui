@@ -2,6 +2,7 @@
 	import type { FileTreeNode, Directory } from '@/types';
 	import { Folder, FolderOpen } from 'lucide-svelte';
 	import { extractBasename } from '@/shared';
+	import ControlPanel from '@/components/ControlPanel.svelte';
 	
 	let {
 		fileTree: fileTreeObj,
@@ -90,6 +91,9 @@
 	class="flex flex-col gap-1 relative h-full shrink-0 overflow-x-hidden overflow-y-auto border border-gray-300 bg-gray-50 p-2 text-sm"
 	style:width="{sidebarWidth}px"
 >
+	<div class="border-b border-gray-300 pb-2">
+		<ControlPanel />
+	</div>
 	{#each fileTree as node (node.name)}
 		{@render treeNode(node, 0)}
 	{:else}
