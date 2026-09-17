@@ -26,9 +26,20 @@
         document.removeEventListener("keydown", escapeKey);
     }
 
+    function valid(path: string): boolean {
+        const pattern = /^[^ \/]+(?:\/[^ \/]+)*\.typ$/g;
+        return pattern.test(path);
+    }
+
     function submit(event: KeyboardEvent) {
         if(event.key === "Enter") {
-            onSubmit?.((event.target as HTMLInputElement).value);
+            const input = (event.target as HTMLInputElement).value;
+            if(!valid(input)) {
+                alert("Invalid path. Please enter a valid path.");
+                stopTyping();
+                return;
+            }
+            onSubmit?.(input);
             stopTyping();
         }
     }

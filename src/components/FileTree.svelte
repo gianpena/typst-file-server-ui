@@ -3,6 +3,7 @@
 	import { Folder, FolderOpen } from 'lucide-svelte';
 	import { extractBasename } from '@/shared';
 	import ControlPanel from '@/components/ControlPanel.svelte';
+	import { invalidateAll } from '$app/navigation';
 	
 	let {
 		fileTree: fileTreeObj,
@@ -54,6 +55,18 @@
 		}
 	}
 
+	async function submit(path: string) {
+		const response = await fetch("/api/touch", {
+			method: "POST",
+			body: JSON.stringify({ path }),
+		});
+		if(!response.ok) {
+			alert("Failed to create file.");
+			return;
+		}
+		await invalidateAll();
+	}
+
 </script>
 
 {#snippet treeNode(node: FileTreeNode, depth: number)}
@@ -92,7 +105,7 @@
 	style:width="{sidebarWidth}px"
 >
 	<div class="border-b border-gray-300 pb-2">
-		<ControlPanel />
+		<ControlPanel onSubmit={submit}/>
 	</div>
 	{#each fileTree as node (node.name)}
 		{@render treeNode(node, 0)}
