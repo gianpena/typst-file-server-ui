@@ -20,7 +20,7 @@
     const pdfPath = $derived(PDFify(path));
 
     const pdf = createQuery(() => ({
-        queryKey: ['fileContents', pdfPath],
+        queryKey: ['fileContents', pdfPath, text.data],
         queryFn: async () => {
             const response = await fetch('/api/compile', {
                 method: 'POST',
@@ -33,6 +33,7 @@
             const { data } = await response.json();
             return data as string;
         },
+        refetchOnWindowFocus: false,
         retry: false
     }));
 
