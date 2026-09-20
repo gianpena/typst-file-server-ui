@@ -7,7 +7,7 @@
     const { path, text = $bindable('') }: { path: string; text: string } = $props();
     const queryClient = useQueryClient();
 
-    let editedText = $derived(text);
+    let editedText = $state($state.snapshot(text));
     let saving = $state(false);
     let saveError = $state(false);
 
