@@ -3,9 +3,15 @@
     import { typst_lezer } from 'codemirror-lang-typst/lezer';
     import { useQueryClient } from '@tanstack/svelte-query';
     import { PDFify } from '@/shared';
+    import { untrack } from 'svelte';
 
     const { path, text = $bindable('') }: { path: string; text: string } = $props();
     const queryClient = useQueryClient();
+
+    $effect(() => {
+        path;
+        editedText = untrack(() => $state.snapshot(text));
+    });
 
     let editedText = $state($state.snapshot(text));
     let saving = $state(false);
