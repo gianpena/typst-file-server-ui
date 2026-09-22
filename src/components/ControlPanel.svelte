@@ -47,7 +47,7 @@
 
 <div class="flex flex-col gap-1 {isTyping ? "" : "items-end"}">
     {#if isTyping}
-        <input bind:this={inputElement} onblur={stopTyping} onkeydown={submit} id="path-input" type="text" class="border-solid border-1 p-1 rounded-sm">
+        <input bind:this={inputElement} onblur={stopTyping} onkeydown={submit} id="path-input" type="text" class="border-solid border-1 p-1 rounded-sm focus:outline-none">
     {:else}
         <button onclick={startTyping}>
             <FilePlus />
