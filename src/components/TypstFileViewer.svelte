@@ -62,6 +62,9 @@
         {:else if isDirty}
             <span class="text-sm text-gray-500">Unsaved changes</span>
         {/if}
+        <button class="rounded bg-red-600 text-white text-sm px-3 py-1 ml-auto disabled:opacity-50" disabled={!isDirty} onclick={() => {editedText = $state.snapshot(text)}}>
+            Discard
+        </button>
     </div>
     <div class="min-h-0 flex-1 overflow-hidden">
         <CodeMirror
